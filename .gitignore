@@ -1,0 +1,3 @@
+data/
+ingest_result_*.json
+__pycache__/

@@ -1,0 +1,55 @@
+# 本地运行覆盖配置。API Key 通过环境变量 AI_PROVIDERS_BAILIAN_APIKEY 注入，不写入文件
+spring:
+  data:
+    redis:
+      port: 6380
+
+ragent:
+  engine:
+    type: agent
+
+agent:
+  chat:
+    provider: bailian
+    model: qwen-plus-latest
+
+ai:
+  chat:
+    candidates:
+      - id: qwen-plus
+        provider: bailian
+        model: qwen-plus-latest
+      - id: qwen-flash
+        provider: bailian
+        model: qwen-flash
+      - id: qwen-plus-thinking
+        provider: bailian
+        model: qwen-plus-latest
+        supports-thinking: true
+    tiers:
+      fast:
+        candidates: [ qwen-flash, qwen-plus ]
+        timeout-ms: 15000
+      standard:
+        candidates: [ qwen-plus, qwen-flash ]
+        timeout-ms: 120000
+      deep:
+        candidates: [ qwen-plus-thinking ]
+        timeout-ms: 180000
+  embedding:
+    default-model: qwen-emb-8b
+    candidates:
+      - id: qwen-emb-8b
+        provider: bailian
+        model: text-embedding-v4
+        dimension: ${rag.default.dimension}
+        priority: 1
+
+# ---- 对照实验 C 组：向量 + ES 关键词（IK 分词）混合检索 + Rerank ----
+rag:
+  keyword:
+    type: es
+  search:
+    channels:
+      keyword:
+        enabled: true
